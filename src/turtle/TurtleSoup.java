@@ -99,7 +99,16 @@ public class TurtleSoup {
 	 */
 	public static double calculateHeadingToPoint(double currentHeading, int currentX, int currentY, int targetX,
 			int targetY) {
-		throw new RuntimeException("implement me!");
+	    double deltaX = targetX - currentX;
+	    double delataY = targetY - currentY;
+	    double rotacionDesdeNorte = Math.toDegrees(Math.atan2(targetX, delataY));
+	    double angulo = 90.0 -( rotacionDesdeNorte + currentHeading);
+	    //Normalizar a rotacion positiva
+	    if(angulo < 0) {
+	        angulo += 360;
+	    }
+	    return angulo;
+//		throw new RuntimeException("implement me!");
 	}
 
 	/**
