@@ -4,6 +4,9 @@
 package turtle;
 
 import java.util.List;
+
+import javax.management.RuntimeErrorException;
+
 import java.util.ArrayList;
 
 public class TurtleSoup {
@@ -99,15 +102,17 @@ public class TurtleSoup {
 	 */
 	public static double calculateHeadingToPoint(double currentHeading, int currentX, int currentY, int targetX,
 			int targetY) {
-	    double deltaX = targetX - currentX;
-	    double delataY = targetY - currentY;
-	    double rotacionDesdeNorte = Math.toDegrees(Math.atan2(targetX, delataY));
-	    double angulo = 90.0 -( rotacionDesdeNorte + currentHeading);
-	    //Normalizar a rotacion positiva
-	    if(angulo < 0) {
-	        angulo += 360;
-	    }
-	    return angulo;
+		double deltaX = targetX - currentX;
+		double deltaY = targetY - currentY;
+		double anguloAlfaTarget = Math.toDegrees(Math.atan2(deltaX, deltaY));
+		double anguloResult = 0.0;
+		// Normalizar a rotacion positiva
+		if (currentHeading <= anguloAlfaTarget) {
+			anguloResult = anguloAlfaTarget - currentHeading;
+		} else {
+			anguloResult = 360.0 - currentHeading + anguloAlfaTarget;
+		}
+		return anguloResult;
 //		throw new RuntimeException("implement me!");
 	}
 
@@ -126,7 +131,19 @@ public class TurtleSoup {
 	 *         points) == 0, otherwise of size (# of points) - 1
 	 */
 	public static List<Double> calculateHeadings(List<Integer> xCoords, List<Integer> yCoords) {
-		throw new RuntimeException("implement me!");
+		if(xCoords.size()!=yCoords.size()) {
+			throw new RuntimeException("Error: xCoords.size() != yCords.size()");
+		}
+		List<Double> resultado = new ArrayList<>(xCoords.size() - 1);
+		if(xCoords.size()>0) {
+			Double rotacionPrevia = Double.valueOf(calculateHeadingToPoint(0.0, 0, 0, xCoords.get(0), yCoords.get(0)));
+			for (int index = 1; index < xCoords.size(); ++index) {
+				resultado.add(Double.valueOf(calculateHeadingToPoint(rotacionPrevia.doubleValue(), xCoords.get(index - 1),
+						yCoords.get(index - 1), xCoords.get(index), yCoords.get(index))));
+				rotacionPrevia = resultado.get(index-1);
+			}
+		}
+		return resultado;
 	}
 
 	/**
